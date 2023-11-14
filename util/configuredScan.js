@@ -2,7 +2,6 @@ import { diffWords } from "diff";
 
 export function configuredScan(A, B) {
   let res = diffWords(A, B)
-  let diffArray = []
   let arrA = []
   let arrB = []
   let tempValA = "" 
@@ -11,19 +10,7 @@ export function configuredScan(A, B) {
   for(let i in res) {
     if(!res[i].hasOwnProperty('added') && !res[i].hasOwnProperty('removed') && res[i].value.trim().length > 1) {
       // Dump Diff Values
-      if(diffArray.length > 0) {
-        for(let j in diffArray) {
-          if(!diffArray[j].hasOwnProperty('added') && !diffArray[j].hasOwnProperty('removed')) {
-            tempValB += diffArray[j].value 
-            tempValA += diffArray[j].value
-          }
-          else if(diffArray[j].removed) {
-            tempValA += diffArray[j].value
-          }
-          else if(diffArray[j].added) {
-            tempValB += diffArray[j].value
-          }
-        }
+      if(tempValA !== "" || tempValB !== "") {
         arrA.push({
           "value": tempValA,
           "type": "DIFF",
@@ -34,7 +21,6 @@ export function configuredScan(A, B) {
         })
         tempValA = ""
         tempValB = ""
-        diffArray = []
       }
       // Dump Common
       commonItem = {
@@ -45,22 +31,20 @@ export function configuredScan(A, B) {
       arrB.push(commonItem)
     }
     else {
-      diffArray.push(res[i])
+      if(!res[i].hasOwnProperty('added') && !res[i].hasOwnProperty('removed')) {
+        tempValB += res[i].value 
+        tempValA += res[i].value
+      }
+      else if(res[i].removed) {
+        tempValA += res[i].value
+      }
+      else if(res[i].added) {
+        tempValB += res[i].value
+      }
     }
   }
-  if(diffArray.length > 0) {
-    for(let j in diffArray) {
-      if(!diffArray[j].hasOwnProperty('added') && !diffArray[j].hasOwnProperty('removed')) {
-        tempValB += diffArray[j].value
-        tempValA += diffArray[j].value
-      }
-      else if(diffArray[j].removed) {
-        tempValA += diffArray[j].value
-      }
-      else if(diffArray[j].added) {
-        tempValB += diffArray[j].value
-      }
-    }
+  // Final Dump
+  if(tempValA !== "" || tempValB !== "") {
     arrA.push({
       "value": tempValA,
       "type": "DIFF",
@@ -71,8 +55,6 @@ export function configuredScan(A, B) {
     })
   }
 
-  console.log(res)
+  // console.log(res)
   return [arrA, arrB]
 }
-
-
