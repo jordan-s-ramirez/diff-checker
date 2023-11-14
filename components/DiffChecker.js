@@ -1,6 +1,8 @@
 import React from 'react';
 import { configuredScan } from '../util/configuredScan';
 import { Grid, TextField, Stack } from '@mui/material';
+import CommonText from './CommonText';
+import DiffText from './DiffText';
 
 export default function DiffChecker() {
   const [textA, setTextA] = React.useState("")
@@ -8,6 +10,8 @@ export default function DiffChecker() {
   const [resultA, setResultA] = React.useState([])
   const [resultB, setResultB] = React.useState([])
   const [showResults, setShowResults] = React.useState(false)
+  const [hoverIdx, setHoverIdx] = React.useState(-1)
+
   const pStyle = {
     padding: '1%',
     borderRadius:'5px',
@@ -16,7 +20,8 @@ export default function DiffChecker() {
   const backgroundColor = {
     "COMMON": "rbga(0,0,0,0)",
     "DIFF": "yellow",
-    "SWAPPED": "rgba(50, 168, 82,0.8)"
+    "SWAPPED": "rgba(50, 168, 82,0.8)",
+    "HOVERED": "orange"
   }
 
   function handleCompareText() {
@@ -46,7 +51,7 @@ export default function DiffChecker() {
         resultA[idx].type = "DIFF"
       }
 
-
+      setHoverIdx(-1)
       setResultA([...resultA])
       setResultB([...resultB])
     }
@@ -91,21 +96,21 @@ export default function DiffChecker() {
             <p style={pStyle}>
               {resultA.map((obj,idx)=>{
                 let rowSplitArr = obj.value.split("\n")
+                if(obj.type === "COMMON") {
+                  return (
+                    <CommonText key={obj.value+idx} backgroundColor={backgroundColor} hoverIdx={hoverIdx} rowSplitArr={rowSplitArr} obj={obj} idx={idx}/>
+                  )
+                }
                 return (
-                  <span key={obj.value + idx} 
-                    style={{
-                      backgroundColor: backgroundColor[obj.type],
-                      whiteSpace: "pre-wrap"
-                    }}
-                    onClick={()=>{handleSwapText(idx)}}
-                  >
-                    {rowSplitArr.map((innerObj, innerIdx)=>{
-                      if(innerIdx > 0) {
-                        return(<span key={innerIdx+innerObj}><br/>{innerObj}</span>)
-                      }
-                      return(<span key={innerIdx+innerObj}>{innerObj}</span>)
-                    })}
-                  </span>
+                  <DiffText 
+                    key={obj.value+idx} 
+                    backgroundColor={backgroundColor} 
+                    hoverIdx={hoverIdx} 
+                    rowSplitArr={rowSplitArr} 
+                    obj={obj} idx={idx} 
+                    handleSwapText={handleSwapText}
+                    setHoverIdx={setHoverIdx}
+                  />
                 )
               })}
             </p>
@@ -116,21 +121,21 @@ export default function DiffChecker() {
             <p style={pStyle}>
               {resultB.map((obj,idx)=>{
                 let rowSplitArr = obj.value.split("\n")
+                if(obj.type === "COMMON") {
+                  return (
+                    <CommonText key={obj.value+idx} backgroundColor={backgroundColor} hoverIdx={hoverIdx} rowSplitArr={rowSplitArr} obj={obj} idx={idx}/>
+                  )
+                }
                 return (
-                  <span key={obj.value + idx} 
-                    style={{
-                      backgroundColor: backgroundColor[obj.type],
-                      whiteSpace: "pre-wrap"
-                    }}
-                    onClick={()=>{handleSwapText(idx)}}
-                  >
-                    {rowSplitArr.map((innerObj, innerIdx)=>{
-                      if(innerIdx > 0) {
-                        return(<span key={innerIdx+innerObj}><br/>{innerObj}</span>)
-                      }
-                      return(<span key={innerIdx+innerObj}>{innerObj}</span>)
-                    })}
-                  </span>
+                  <DiffText 
+                    key={obj.value+idx} 
+                    backgroundColor={backgroundColor} 
+                    hoverIdx={hoverIdx} 
+                    rowSplitArr={rowSplitArr} 
+                    obj={obj} idx={idx} 
+                    handleSwapText={handleSwapText}
+                    setHoverIdx={setHoverIdx}
+                  />
                 )
               })}
             </p>
